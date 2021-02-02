@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import line from '../src/LineData'
-import Table from './components/Table'
+import Table from './components/pages/Table'
+import Navigator from './components/Navigator'
+import Content from './components/Content'
 
 console.log('line', line)
 export default class App extends Component {
@@ -8,16 +10,10 @@ export default class App extends Component {
     const [...keys] = Object.keys(line)
     console.log('keys', keys, line)
     return (
-      <div>
-        <hr/>
-        {keys.map(key => {
-          if(!key.includes('Sp')){
-            return <Table key={`Table_${key}`} objKey={key} data={line[key]}/>
-          }else{
-            return null
-          }
-        })}
-      </div>
+      <>
+        <Navigator/>
+        <Content/>
+      </>
     )
   }
 }
