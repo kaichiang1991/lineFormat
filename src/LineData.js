@@ -429,3 +429,5 @@ const line = {
     50: [[0,1],[1,0],[2,2],[3,0],[4,3]],
   }
 }
+
+export default line
