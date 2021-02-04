@@ -4,10 +4,11 @@
     left: 0;
     background-color: burlywood;
     width: 100%;
-    height: 100px;
+    padding: 10px;
 }
 
 .nav-tag{
+    display: inline-block;
     font-size: 20px;
     margin-top: 5px;
     text-decoration: none;

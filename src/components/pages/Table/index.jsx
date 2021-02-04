@@ -1,11 +1,11 @@
 import { nanoid } from 'nanoid'
 import React, { Component } from 'react'
-import Unit from '../Unit'
+import Unit from './Unit'
 import './index.css'
 
 export default class Table extends Component {
     render() {
-        const {objKey, data} = this.props
+        const {objKey, data} = this.props.location.state
         const [...keys] = Object.keys(data)
         const [format] = objKey.split('_')
         const [row, column] = format.split('x')
