@@ -14,15 +14,14 @@ export default class Table extends Component {
             <div>
                 <h2>{objKey}</h2>
                 {
-                    keys.map(key =>
-        
+                    keys.map(_key =>
                         <div key={nanoid()} className="lineUnit">
-                            <h3>Line {key}</h3>
+                            <h3>Line {_key}</h3>
                             <ul>
                                 {
                                     Array(row*1).fill(1).map((_, rowIndex) =>
                                         <li key={nanoid()}>{Array(column*1).fill(1).map((_, columnIndex) =>{
-                                            const posJoin = data[key].map(pos => pos.join())
+                                            const posJoin = data[_key].map(pos => pos.join())
                                             return <Unit key={nanoid()} active={posJoin.includes([columnIndex, rowIndex].join())}/>
                                         })}</li>
                                     )

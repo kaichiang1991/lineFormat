@@ -1,0 +1,14 @@
+.unit{
+    display: inline;
+    margin: 3px;
+    padding: 0 10px;
+    border: 2px solid;
+}
+
+.unit.active{
+    background-color: red;
+}
+
+.unit.disactive{
+    background-color: aqua;
+}
