@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import React, { Component } from 'react'
-import Unit from './Unit'
+import Unit from '../Unit'
 import './index.css'
 
 export default class Table extends Component {
@@ -18,19 +18,21 @@ export default class Table extends Component {
                         <div key={nanoid()} className="lineUnit">
                             <h3>Line {_key}</h3>
                             <ul>
-                                {
-                                    Array(row*1).fill(1).map((_, rowIndex) =>
-                                        <li key={nanoid()}>{Array(column*1).fill(1).map((_, columnIndex) =>{
-                                            const posJoin = data[_key].map(pos => pos.join())
-                                            return <Unit key={nanoid()} active={posJoin.includes([columnIndex, rowIndex].join())}/>
-                                        })}</li>
-                                    )
-                                }
+                            {
+                                Array(column*1).fill(1).map((_, columnIndex) => 
+                                    <li>
+                                    {
+                                        Array(row*1).fill(1).map((_, rowIndex) =>
+                                            <Unit active={data[_key].map(pos=>pos.join()).includes([columnIndex, rowIndex].join())}/>
+                                        )
+                                    }
+                                    </li>
+                                )
+                            }
                             </ul>
                         </div>
                     )
                 }
-                <hr/>
             </div>
         )
     }

@@ -14,17 +14,17 @@ export default class TableSp1 extends Component {
                 <h2>{objKey}</h2>
                 {
                     keys.map(_key =>
-                        <div key={nanoid()} className="lineUnit sp1">
+                        <div key={nanoid()} className="lineUnit">
                         <h3>Line {_key}</h3>
+                        <ul>
                         {
                             format.map((count, columnIndex) =>
-                                <ul key={nanoid()}>
-                                    <li>{Array(count).fill(1).map((_, rowIndex)=> 
-                                        <Unit key={nanoid()} sp1 active={data[_key].map(pos => pos.join()).includes([columnIndex, rowIndex].join())}/>
-                                        )}</li>
-                                </ul>
+                                <li>{Array(count).fill(1).map((_, rowIndex)=> 
+                                    <Unit key={nanoid()} sp1 active={data[_key].map(pos => pos.join()).includes([columnIndex, rowIndex].join())}/>
+                                )}</li>
                             )
                         }
+                        </ul>
                         </div>
                     )
                 }
