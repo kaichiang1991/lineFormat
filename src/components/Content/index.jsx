@@ -8,7 +8,7 @@ import TableSp1 from '../pages/TableSp1'
 
 export default class Content extends Component {    
     render() {
-        const titles = Object.keys(line)       
+        const titles = Object.keys(line)
         return (
             <div className="content">
                 <Switch>

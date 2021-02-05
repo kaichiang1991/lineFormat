@@ -6,9 +6,9 @@
 }
 
 .unit.active{
-    background-color: red;
+    background-color: #F7BA2A;
 }
 
 .unit.disactive{
-    background-color: aqua;
+    background-color:#58B7FF;
 }

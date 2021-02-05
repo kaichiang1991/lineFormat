@@ -20,10 +20,10 @@ export default class Table extends Component {
                             <ul>
                             {
                                 Array(column*1).fill(1).map((_, columnIndex) => 
-                                    <li>
+                                    <li key={nanoid()}>
                                     {
                                         Array(row*1).fill(1).map((_, rowIndex) =>
-                                            <Unit active={data[_key].map(pos=>pos.join()).includes([columnIndex, rowIndex].join())}/>
+                                            <Unit key={nanoid()} active={data[_key].map(pos=>pos.join()).includes([columnIndex, rowIndex].join())}/>
                                         )
                                     }
                                     </li>
