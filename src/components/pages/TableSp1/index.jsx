@@ -19,8 +19,8 @@ export default class TableSp1 extends Component {
                         <ul>
                         {
                             format.map((count, columnIndex) =>
-                                <li>{Array(count).fill(1).map((_, rowIndex)=> 
-                                    <Unit key={nanoid()} sp1 active={data[_key].map(pos => pos.join()).includes([columnIndex, rowIndex].join())}/>
+                                <li key={nanoid()}>{Array(count).fill(1).map((_, rowIndex)=> 
+                                    <Unit key={nanoid()} active={data[_key].map(pos => pos.join()).includes([columnIndex, rowIndex].join())}/>
                                 )}</li>
                             )
                         }

@@ -1,0 +1,30 @@
+#add-new{
+    border: 3px solid;
+    padding: 5px;
+    width: 500px;
+    position: relative;
+}
+
+#add-new button{
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+}
+
+.input-span{
+    display: block;
+    margin: 5px;
+}
+
+.input-span input{
+    width: 30px;
+    margin: 5px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="number"]{
+    -moz-appearance: textfield;
+}

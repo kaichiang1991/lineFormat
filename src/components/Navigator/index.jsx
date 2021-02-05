@@ -11,6 +11,9 @@ class Navigator extends Component {
         titleGroup: [
             {
                 title: '顯示'
+            },
+            {
+                title: '新增', data: {title: '新增線圖', id: 'addNew'}
             }
         ]
     }
@@ -31,6 +34,17 @@ class Navigator extends Component {
     }
 
     tagSelect = (target) => {
+        switch(target){
+            case 'addNew':
+                this.addNew(target)
+                break
+            default:
+                this.showLine(target)
+                break;
+        }
+    }
+
+    showLine = (target) => {
         const {datas} = this.state.titleGroup[0]
         const flatData = Object.values(datas).reduce((pre, curr) => [...pre, ...curr], [])
         const data = flatData.find(_data => _data.id === target)
@@ -38,11 +52,12 @@ class Navigator extends Component {
         history.push({pathname: `/${data.lineName}`, state: {objKey: data.lineName, data: line[data.lineName]}})
     }
 
+    addNew = (target) => {
+        this.props.history.push({pathname: `/${target}`})
+    }
+
     render() {
         const [...groups] = this.state.titleGroup
-        if(!groups[0].datas)
-            return null
-
         return (
             <Layout.Col span={4}>
                 <Menu mode="vertical" className="el-menu-vertical-demo navigator" onSelect={this.tagSelect} theme="dark">
@@ -50,13 +65,18 @@ class Navigator extends Component {
                     groups.map(group =>
                         <Menu.ItemGroup title={group.title} key={group.title}>
                             {
-                                Object.keys(group.datas).map(_key =>
-                                    <Menu.SubMenu key={_key} index={_key} title={_key}>
-                                        {group.datas[_key].map(data =>
-                                            <Menu.Item key={data.id} index={data.id}><i className="el-icon-setting"/>{data.lineName}</Menu.Item>    
-                                        )}
-                                    </Menu.SubMenu>    
-                                )
+                                !group.datas && !group.data? null: 
+                                group.title === '顯示'? 
+                                    Object.keys(group.datas).map(_key =>
+                                        <Menu.SubMenu key={_key} index={_key} title={_key}>
+                                            {group.datas[_key].map(data =>
+                                                <Menu.Item key={data.id} index={data.id}><i className="el-icon-setting"/>{data.lineName}</Menu.Item>    
+                                            )}
+                                        </Menu.SubMenu>    
+                                    )
+                                : group.title === '新增'?
+                                <Menu.Item index={group.data.id}>{group.data.title}</Menu.Item>             
+                                : null
                             }
                         </Menu.ItemGroup>
                     )

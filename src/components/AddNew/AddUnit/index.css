@@ -1,0 +1,14 @@
+.add-unit{
+    display: block;
+    margin: 3px;
+    padding: 20px;
+    border: 2px solid;
+}
+
+.add-unit.active{
+    background-color: #F7BA2A;
+}
+
+.add-unit.disactive{
+    background-color:#58B7FF;
+}

@@ -5,6 +5,7 @@ import line from '../../LineData'
 import { Route, Switch } from 'react-router-dom'
 import { nanoid } from 'nanoid'
 import TableSp1 from '../pages/TableSp1'
+import AddNew from '../AddNew'
 
 export default class Content extends Component {    
     render() {
@@ -17,6 +18,7 @@ export default class Content extends Component {
                         <Route key={nanoid()} path={`/${title}`} component={title.includes('Sp')? TableSp1 : Table}/>
                     )
                 }
+                <Route path='/addNew' render={props => <AddNew/>}/>
                 </Switch>
             </div>
         )
