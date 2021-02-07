@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { Route, withRouter } from 'react-router-dom'
+import ClipboardJS from 'clipboard'
+import { nanoid } from 'nanoid'
 import './index.css'
 import AddUnit from './AddUnit'
 import AddList from './AddList'
-import { nanoid } from 'nanoid'
 
 class AddNew extends Component {
 
@@ -40,7 +41,7 @@ class AddNew extends Component {
     checkResult = () => {
         const {results} = this.state
         const lineNoArr = results.map(result => result.lineNo)
-        return !lineNoArr.find((lineNo, index) => lineNoArr.indexOf(lineNo) != index)
+        return !lineNoArr.find((lineNo, index) => lineNoArr.indexOf(lineNo) !== index)
     }
 
     confirmResult = () => {
@@ -48,15 +49,16 @@ class AddNew extends Component {
         errorIds.length = 0
         if(!this.checkResult()){
             const lineNoArr = results.map(result => result.lineNo)
-            results.filter((result, index) => lineNoArr.indexOf(result.lineNo) != index).map(result => errorIds.push(result.id))
+            results.filter((result, index) => lineNoArr.indexOf(result.lineNo) !== index).map(result => errorIds.push(result.id))
             this.setState({errorIds: errorIds})
             return
         }
 
-        const finalLines = {}
-        results.map(result => finalLines[result.lineNo] = result.datas.map(data => Array.from(data.split(',').map(arr => arr * 1))))
+        const finalLines = []
+        results.map(result => finalLines[`${result.lineNo*1}`] = result.datas.map(data => Array.from(data.split(',').map(arr => arr * 1))))
+        console.log('final line', finalLines, {...finalLines})
         this.setState({finalResult: {
-            [this.name.value]: finalLines}
+            [this.name.value]: {...finalLines}}
         })
     }
 
@@ -78,8 +80,17 @@ class AddNew extends Component {
         }
     }
 
+    componentDidMount(){
+        new ClipboardJS('#copy-btn')        // 指定 複製的功能
+    }
+
     render() {
         const {results, datas, errorIds, finalResult} = this.state
+        console.log(
+            'final Result', finalResult,
+            JSON.stringify(finalResult, null)
+        )
+
         return (
             <div>
                 {/* 顯示表格的尺寸 */}
@@ -121,7 +132,8 @@ class AddNew extends Component {
 
                 {/* 顯示最終結果 */}
                 <h2>輸出結果</h2>
-                <span>{JSON.stringify(finalResult, null, '\t')}</span>
+                <span id="to-copy">{JSON.stringify(finalResult, null, 2)}</span>
+                <button id="copy-btn" data-clipboard-target="#to-copy">複製</button>
             </div>
         )
     }
