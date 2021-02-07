@@ -28,3 +28,8 @@ input::-webkit-inner-spin-button {
 input[type="number"]{
     -moz-appearance: textfield;
 }
+
+#confirm{
+    left: 0 !important;
+    margin-left: 20px;
+}

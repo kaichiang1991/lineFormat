@@ -3,6 +3,7 @@ import { Route, withRouter } from 'react-router-dom'
 import './index.css'
 import AddUnit from './AddUnit'
 import AddList from './AddList'
+import { nanoid } from 'nanoid'
 
 class AddNew extends Component {
 
@@ -21,15 +22,23 @@ class AddNew extends Component {
         this.props.history.push({pathname: '/addNew/newTable', state: {name: name.value, row: row.value*1, column: column.value*1}})
     }
 
+    /** 選取格子後的提交 */
     submitChoose = () => {
-        if(!this.lineName.value || !this.state.datas.length)
-            return
-        console.log('submit choose', this.lineName.value, this.state.datas)
-
+        const {value} = this.lineName        
         const {datas, results} = this.state
-        this.setState({datas: [], results: [...results, {lineNo: this.lineName.value, datas: datas}]})
+
+        if(!value || !datas.length)
+            return
+
+        this.setState({datas: [], results: [...results, {id: nanoid(), lineNo: value, datas: datas.sort((a, b) => a.split(',')[0]*1 - b.split(',')[0]*1 )}]})
+        this.lineName.value = value *1 +1
     }
 
+    confirmResult = () => {
+        console.log('confirm result', this.state.results)    
+    }
+
+    /** 每一格點擊的事件 */
     unitClick = (columnIndex, rowIndex) => {
         return () => {
             this.setState(state => {
@@ -39,9 +48,16 @@ class AddNew extends Component {
         }
     }
 
+    /** 移除指定的線 */
+    removeItem = (target) => {
+        return ()=>{
+            const {results} = this.state
+            this.setState({results: results.filter(result => result.id !== target)})
+        }
+    }
+
     render() {
         const {results, datas} = this.state
-        console.log('render', datas, results)
         return (
             <div>
                 <div id="add-new">
@@ -59,8 +75,8 @@ class AddNew extends Component {
                         <h2>{name}</h2>
                         <ul>
                             {Array(column).fill(1).map((_, columnIndex) =>
-                                <li>{Array(row).fill(1).map((_, rowIndex) =>
-                                    <AddUnit active={datas.includes([columnIndex, rowIndex].join())} clickEvent={this.unitClick(columnIndex, rowIndex)}/>
+                                <li key={nanoid()}>{Array(row).fill(1).map((_, rowIndex) =>
+                                    <AddUnit key={nanoid()} active={datas.includes([columnIndex, rowIndex].join())} clickEvent={this.unitClick(columnIndex, rowIndex)}/>
                                 )}</li>
                             )}
                         </ul>
@@ -73,8 +89,8 @@ class AddNew extends Component {
 
                 <h2>Result:</h2>
                 <ul style={{width: '500px', position: 'relative'}}>
-                    {/* <AddList/> */}
-                    {results.map(result => <AddList result={result}/>)}
+                    {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem}/>)}
+                    <li><button id="confirm" onClick={this.confirmResult}> 確認 </button></li>
                 </ul>
             </div>
         )
