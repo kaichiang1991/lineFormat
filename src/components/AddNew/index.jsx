@@ -9,7 +9,9 @@ class AddNew extends Component {
 
     state = {
         datas: [],
-        results: []
+        results: [],
+        errorIds: [],
+        finalResult: {}
     }
 
     /** 設定表單完成 */
@@ -34,8 +36,28 @@ class AddNew extends Component {
         this.lineName.value = value *1 +1
     }
 
+    /** 檢查是否有重複的lineNo */
+    checkResult = () => {
+        const {results} = this.state
+        const lineNoArr = results.map(result => result.lineNo)
+        return !lineNoArr.find((lineNo, index) => lineNoArr.indexOf(lineNo) != index)
+    }
+
     confirmResult = () => {
-        console.log('confirm result', this.state.results)    
+        const {results, errorIds} = this.state 
+        errorIds.length = 0
+        if(!this.checkResult()){
+            const lineNoArr = results.map(result => result.lineNo)
+            results.filter((result, index) => lineNoArr.indexOf(result.lineNo) != index).map(result => errorIds.push(result.id))
+            this.setState({errorIds: errorIds})
+            return
+        }
+
+        const finalLines = {}
+        results.map(result => finalLines[result.lineNo] = result.datas.map(data => Array.from(data.split(',').map(arr => arr * 1))))
+        this.setState({finalResult: {
+            [this.name.value]: finalLines}
+        })
     }
 
     /** 每一格點擊的事件 */
@@ -57,9 +79,10 @@ class AddNew extends Component {
     }
 
     render() {
-        const {results, datas} = this.state
+        const {results, datas, errorIds, finalResult} = this.state
         return (
             <div>
+                {/* 顯示表格的尺寸 */}
                 <div id="add-new">
                     <span className='input-span'>命名: <input type="text" style={{width: '150px'}} placeholder='線的名稱' ref={c => this.name = c}/></span>
                     <span className='input-span'><input type="number" ref={c => this.row = c}/>列</span>
@@ -68,6 +91,7 @@ class AddNew extends Component {
                 </div>
                 <hr/>
 
+                {/* 顯示可以點選的格子 */}
                 <Route path='/addNew/newTable' render={props =>{
                     const {name, row, column} = props.location.state
                     return (
@@ -87,11 +111,17 @@ class AddNew extends Component {
                 }}/>
                 <hr/>
 
+                {/* 顯示每一條線的結果 */}
                 <h2>Result:</h2>
                 <ul style={{width: '500px', position: 'relative'}}>
-                    {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem}/>)}
+                    {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem} isError={errorIds.includes(result.id)}/>)}
                     <li><button id="confirm" onClick={this.confirmResult}> 確認 </button></li>
                 </ul>
+                <hr/>
+
+                {/* 顯示最終結果 */}
+                <h2>輸出結果</h2>
+                <span>{JSON.stringify(finalResult, null, '\t')}</span>
             </div>
         )
     }

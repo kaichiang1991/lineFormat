@@ -7,3 +7,7 @@ li button{
     display: block;
     margin: 3px;
 }
+
+.isError{
+    color: red;
+}
