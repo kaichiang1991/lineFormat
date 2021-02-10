@@ -99,11 +99,7 @@ class AddNew extends Component {
     getResult = () => {
         const {innerHTML: name} = this.formName
         const {results} = this.state
-        console.log('get result', name, results, this.formName)
-        return `
-'${name}': {        
-${results?.map(result => `${result.lineNo}: ${result.datas}, \n`)}
-}`    
+        return `${name}': {${results?.map(result => `\n\t${result.lineNo}: [${result.datas.map(data => `[${data}]`)}]`)}\n}`
     }
 
     render() {
