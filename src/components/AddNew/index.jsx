@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Route, withRouter } from 'react-router-dom'
-import ClipboardJS from 'clipboard'
+import Clipboard from 'react-clipboard.js'
 import { nanoid } from 'nanoid'
 import './index.css'
 import AddUnit from './AddUnit'
@@ -12,6 +12,7 @@ class AddNew extends Component {
         datas: [],
         results: [],
         errorIds: [],
+        errorLineNos: [],
         finalResult: {}
     }
 
@@ -33,15 +34,23 @@ class AddNew extends Component {
         if(!value || !datas.length)
             return
 
-        this.setState({datas: [], results: [...results, {id: nanoid(), lineNo: value, datas: datas.sort((a, b) => a.split(',')[0]*1 - b.split(',')[0]*1 )}]})
-        this.lineName.value = value *1 +1
+        const newResult = [...results, {id: nanoid(), lineNo: value, datas: datas.sort((a, b) => a.split(',')[0]*1 - b.split(',')[0]*1 )}]
+        this.setState({
+            datas: [], 
+            results: newResult,
+            errorLineNos: this.checkResult(newResult)
+        }, ()=> this.lineName.value = value*1 +1)
     }
 
-    /** 檢查是否有重複的lineNo */
-    checkResult = () => {
-        const {results} = this.state
-        const lineNoArr = results.map(result => result.lineNo)
-        return !lineNoArr.find((lineNo, index) => lineNoArr.indexOf(lineNo) !== index)
+    /** 
+     * 檢查是否有重複的lineNo
+     * 回傳重複的 result id
+     */
+    checkResult = (newResult) => {
+        const duplicateLineNos = []
+        const lineNoArr = newResult.map(result => result.lineNo)
+        newResult.filter((result, index) => lineNoArr.indexOf(result.lineNo) !== index).map(result => !duplicateLineNos.includes(result.lineNo) && duplicateLineNos.push(result.lineNo)) 
+        return duplicateLineNos
     }
 
     confirmResult = () => {
@@ -54,12 +63,11 @@ class AddNew extends Component {
             return
         }
 
-        const finalLines = []
-        results.map(result => finalLines[`${result.lineNo*1}`] = result.datas.map(data => Array.from(data.split(',').map(arr => arr * 1))))
-        console.log('final line', finalLines, {...finalLines})
+        console.log('results', results)
         this.setState({finalResult: {
-            [this.name.value]: {...finalLines}}
-        })
+            name: this.name.value,
+            results: results
+        }})
     }
 
     /** 每一格點擊的事件 */
@@ -72,24 +80,34 @@ class AddNew extends Component {
         }
     }
 
-    /** 移除指定的線 */
-    removeItem = (target) => {
+    /** 
+     * 移除指定的線
+     * 並視情況清除重複的提示
+    */
+    removeItem = (id) => {
         return ()=>{
-            const {results} = this.state
-            this.setState({results: results.filter(result => result.id !== target)})
+            const {results, errorLineNos} = this.state
+            const lineNo = results.find(result => result.id === id).lineNo
+            const filterNos = results.filter(result => result.lineNo === lineNo && result.id !== id)
+            this.setState({
+                results: results.filter(result => result.id !== id),        // 清除該list
+                errorLineNos: filterNos.length <= 1? errorLineNos.filter(_lineNo => _lineNo !== lineNo): errorLineNos
+            })
         }
     }
 
-    componentDidMount(){
-        new ClipboardJS('#copy-btn')        // 指定 複製的功能
+    getResult = () => {
+        const {innerHTML: name} = this.formName
+        const {results} = this.state
+        console.log('get result', name, results, this.formName)
+        return `
+'${name}': {        
+${results?.map(result => `${result.lineNo}: ${result.datas}, \n`)}
+}`    
     }
 
     render() {
-        const {results, datas, errorIds, finalResult} = this.state
-        console.log(
-            'final Result', finalResult,
-            JSON.stringify(finalResult, null)
-        )
+        const {results, datas, errorLineNos} = this.state
 
         return (
             <div>
@@ -107,7 +125,7 @@ class AddNew extends Component {
                     const {name, row, column} = props.location.state
                     return (
                     <div>
-                        <h2>{name}</h2>
+                        <h2 ref={c => this.formName = c}>{name}</h2>
                         <ul>
                             {Array(column).fill(1).map((_, columnIndex) =>
                                 <li key={nanoid()}>{Array(row).fill(1).map((_, rowIndex) =>
@@ -123,17 +141,22 @@ class AddNew extends Component {
                 <hr/>
 
                 {/* 顯示每一條線的結果 */}
-                <h2>Result:</h2>
+                <h2>最終結果:</h2>
                 <ul style={{width: '500px', position: 'relative'}}>
-                    {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem} isError={errorIds.includes(result.id)}/>)}
-                    <li><button id="confirm" onClick={this.confirmResult}> 確認 </button></li>
+                    {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem} isError={errorLineNos.includes(result.lineNo)}/>)}
+                    {/* <li><button id="confirm" onClick={this.confirmResult}> 確認 </button></li> */}
+                    <li>
+                    <Clipboard option-text={this.getResult}>
+                    複製結果
+                    </Clipboard>
+                    </li>
                 </ul>
                 <hr/>
 
                 {/* 顯示最終結果 */}
-                <h2>輸出結果</h2>
-                <span id="to-copy">{JSON.stringify(finalResult, null, 2)}</span>
-                <button id="copy-btn" data-clipboard-target="#to-copy">複製</button>
+                {/* <Clipboard option-text={this.getResult}>
+                    複製結果
+                </Clipboard> */}
             </div>
         )
     }
