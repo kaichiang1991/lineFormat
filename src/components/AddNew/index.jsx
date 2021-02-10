@@ -9,6 +9,7 @@ import AddList from './AddList'
 class AddNew extends Component {
 
     state = {
+        lineNo: 1,
         datas: [],
         results: [],
         errorIds: [],
@@ -26,20 +27,24 @@ class AddNew extends Component {
         this.props.history.push({pathname: '/addNew/newTable', state: {name: name.value, row: row.value*1, column: column.value*1}})
     }
 
+    changeLineNo = event => {
+        this.setState({lineNo: event.target.value})
+    }
+
     /** 選取格子後的提交 */
     submitChoose = () => {
-        const {value} = this.lineName        
-        const {datas, results} = this.state
+        const {lineNo, datas, results} = this.state
 
-        if(!value || !datas.length)
+        if(!lineNo || !datas.length)
             return
 
-        const newResult = [...results, {id: nanoid(), lineNo: value, datas: datas.sort((a, b) => a.split(',')[0]*1 - b.split(',')[0]*1 )}]
+        const newResult = [...results, {id: nanoid(), lineNo: lineNo*1, datas: datas.sort((a, b) => a.split(',')[0]*1 - b.split(',')[0]*1 )}]
         this.setState({
+            lineNo: lineNo*1 +1,
             datas: [], 
             results: newResult,
             errorLineNos: this.checkResult(newResult)
-        }, ()=> this.lineName.value = value*1 +1)
+        })
     }
 
     /** 
@@ -51,23 +56,6 @@ class AddNew extends Component {
         const lineNoArr = newResult.map(result => result.lineNo)
         newResult.filter((result, index) => lineNoArr.indexOf(result.lineNo) !== index).map(result => !duplicateLineNos.includes(result.lineNo) && duplicateLineNos.push(result.lineNo)) 
         return duplicateLineNos
-    }
-
-    confirmResult = () => {
-        const {results, errorIds} = this.state 
-        errorIds.length = 0
-        if(!this.checkResult()){
-            const lineNoArr = results.map(result => result.lineNo)
-            results.filter((result, index) => lineNoArr.indexOf(result.lineNo) !== index).map(result => errorIds.push(result.id))
-            this.setState({errorIds: errorIds})
-            return
-        }
-
-        console.log('results', results)
-        this.setState({finalResult: {
-            name: this.name.value,
-            results: results
-        }})
     }
 
     /** 每一格點擊的事件 */
@@ -96,14 +84,20 @@ class AddNew extends Component {
         }
     }
 
+    /** 取得要複製的結果字串 */
     getResult = () => {
-        const {innerHTML: name} = this.formName
         const {results} = this.state
-        return `${name}': {${results?.map(result => `\n\t${result.lineNo}: [${result.datas.map(data => `[${data}]`)}]`)}\n}`
+        if(this.checkResult(results).length){   // 檢查是否有重複
+            alert('資料不正確')
+            return null
+        }
+
+        const {innerHTML: name} = this.formName
+        return `'${name}': {${results?.map(result => `\n\t${result.lineNo}: [${result.datas.map(data => `[${data}]`)}]`)}\n}`
     }
 
     render() {
-        const {results, datas, errorLineNos} = this.state
+        const {lineNo, results, datas, errorLineNos} = this.state
 
         return (
             <div>
@@ -129,7 +123,7 @@ class AddNew extends Component {
                                 )}</li>
                             )}
                         </ul>
-                        <span className='input-span'>第<input type="number" ref={c => this.lineName = c}/>線</span>
+                        <span className='input-span'>第<input type="number" value={lineNo} onChange={this.changeLineNo}/>線</span>
                         <button onClick={this.submitChoose}>送出</button>
                     </div>
                     )
@@ -142,17 +136,11 @@ class AddNew extends Component {
                     {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem} isError={errorLineNos.includes(result.lineNo)}/>)}
                     {/* <li><button id="confirm" onClick={this.confirmResult}> 確認 </button></li> */}
                     <li>
-                    <Clipboard option-text={this.getResult}>
+                    <Clipboard button-id="confirm" option-text={this.getResult}>
                     複製結果
                     </Clipboard>
                     </li>
                 </ul>
-                <hr/>
-
-                {/* 顯示最終結果 */}
-                {/* <Clipboard option-text={this.getResult}>
-                    複製結果
-                </Clipboard> */}
             </div>
         )
     }
