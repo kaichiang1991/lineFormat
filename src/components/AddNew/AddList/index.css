@@ -5,9 +5,17 @@ li button{
 
 .add-list-li{
     display: block;
-    margin: 3px;
+    margin: 8px;
+    padding: 3px;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    font-weight: bold;
+}
+
+.add-list-li:hover{
+    background-color: #99A9BF;
 }
 
 .isError{
-    color: red;
+    color: #FF4949;
+    font-weight: bolder;
 }

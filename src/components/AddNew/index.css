@@ -3,6 +3,8 @@
     padding: 5px;
     width: 500px;
     position: relative;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    font-weight: bold;
 }
 
 #add-new button{
@@ -12,12 +14,25 @@
 }
 
 .input-span{
-    display: block;
+    display: inline-block;
     margin: 5px;
 }
 
+.submit-btn{
+    display: inline-block;
+    margin-left: 50px;
+}
+
+.el-input{
+    width: auto;
+}
+
+#line-no{
+    width: 200px;
+}
+
 .input-span input{
-    width: 30px;
+    width: 50px;
     margin: 5px;
 }
 

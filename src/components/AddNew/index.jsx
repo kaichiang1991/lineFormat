@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid'
 import './index.css'
 import AddUnit from './AddUnit'
 import AddList from './AddList'
+import { Input } from 'element-react'
 
 class AddNew extends Component {
 
@@ -20,15 +21,15 @@ class AddNew extends Component {
     /** 設定表單完成 */
     submitForm = () => {
         const {name, row, column} = this
-        if(!name.value || !row.value || !column.value)
+        const {value: _name} = name.refs.input, {value: _row} = row.refs.input, {value: _column} = column.refs.input
+        if(!_name || !_row || !_column)
             return
 
-        this.setState(state => state.result = {[name.value]: 1})
-        this.props.history.push({pathname: '/addNew/newTable', state: {name: name.value, row: row.value*1, column: column.value*1}})
+        this.props.history.push({pathname: '/addNew/newTable', state: {name: _name, row: _row*1, column: _column*1}})
     }
 
     changeLineNo = event => {
-        this.setState({lineNo: event.target.value})
+        this.setState({lineNo: event})
     }
 
     /** 選取格子後的提交 */
@@ -87,6 +88,11 @@ class AddNew extends Component {
     /** 取得要複製的結果字串 */
     getResult = () => {
         const {results} = this.state
+        if(!results.length){
+            alert('資料為空')
+            return null
+        }
+
         if(this.checkResult(results).length){   // 檢查是否有重複
             alert('資料不正確')
             return null
@@ -96,6 +102,10 @@ class AddNew extends Component {
         return `'${name}': {${results?.map(result => `\n\t${result.lineNo}: [${result.datas.map(data => `[${data}]`)}]`)}\n}`
     }
 
+    copySuccess = () => {
+        alert('資料已成功複製')   
+    }
+
     render() {
         const {lineNo, results, datas, errorLineNos} = this.state
 
@@ -103,9 +113,13 @@ class AddNew extends Component {
             <div>
                 {/* 顯示表格的尺寸 */}
                 <div id="add-new">
-                    <span className='input-span'>命名: <input type="text" style={{width: '150px'}} placeholder='線的名稱' ref={c => this.name = c}/></span>
-                    <span className='input-span'><input type="number" ref={c => this.row = c}/>列</span>
-                    <span className='input-span'><input type="number" ref={c => this.column = c}/>行</span>
+                    <div>
+                        <span className='input-span'>命名: <Input type="text" id="line-no" placeholder='線的名稱' ref={c => this.name = c}/></span>
+                    </div>
+                    <div>
+                        <span className='input-span'><Input type="number" ref={c => this.row = c}/>列</span>
+                        <span className='input-span'><Input type="number" ref={c => this.column = c}/>行</span>
+                    </div>
                     <button onClick={this.submitForm}>送出</button>
                 </div>
                 <hr/>
@@ -123,8 +137,8 @@ class AddNew extends Component {
                                 )}</li>
                             )}
                         </ul>
-                        <span className='input-span'>第<input type="number" value={lineNo} onChange={this.changeLineNo}/>線</span>
-                        <button onClick={this.submitChoose}>送出</button>
+                        <span className='input-span'>第<Input type="number" value={lineNo} onChange={this.changeLineNo}/>線</span>
+                        <button className='submit-btn' onClick={this.submitChoose}>送出</button>
                     </div>
                     )
                 }}/>
@@ -134,9 +148,8 @@ class AddNew extends Component {
                 <h2>最終結果:</h2>
                 <ul style={{width: '500px', position: 'relative'}}>
                     {results.map(result => <AddList key={nanoid()} result={result} removeEvent={this.removeItem} isError={errorLineNos.includes(result.lineNo)}/>)}
-                    {/* <li><button id="confirm" onClick={this.confirmResult}> 確認 </button></li> */}
                     <li>
-                    <Clipboard button-id="confirm" option-text={this.getResult}>
+                    <Clipboard button-id="confirm" option-text={this.getResult} onSuccess={this.copySuccess}>
                     複製結果
                     </Clipboard>
                     </li>
