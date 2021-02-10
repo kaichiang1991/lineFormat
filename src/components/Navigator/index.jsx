@@ -28,8 +28,12 @@ class Navigator extends Component {
         displayGroup.datas = {
             '3x': datas.filter(data => /3x/.test(data)).map((data, index) => ({lineName: data, id: `3x_${index}`})),
             '4x': datas.filter(data => /4x/.test(data)).map((data, index) => ({lineName: data, id: `4x_${index}`})),
-            '其他': datas.filter(data => /Sp/.test(data)).map((data, index) => ({lineName: data, id: `sp_${index}`}))
         }
+
+        const currentDatas = Object.values(displayGroup.datas).reduce((pre, curr) => [...pre, ...curr])
+        displayGroup.datas['其他'] = datas.filter(data => !currentDatas.find(_data => _data.lineName === data))
+        .map((data, index) => ({lineName: data, id: `other_${index}`}))
+
         this.setState({})
     }
 
